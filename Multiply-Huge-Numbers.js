@@ -1,40 +1,54 @@
 // IN PROGRESS, TRYING TO SOLVE KATA 'MULTIPLYING NUMBERS AS STRINGS': https://www.codewars.com/kata/multiplying-numbers-as-strings
 
 function multiply(a, b){
-
-    const string1Split = a.split('')
-    .reverse();
-    const string2Split = b.split('')
-    .reverse();
-  
-    let theSum = [];
-    let remainder = '';
-  
-    for(let i = 0; i < string1Split.length; i++){
-      console.log(`-------------- iteration # ${i} ------------------`);
-      let prod = ((Number(string1Split[i] * string2Split[i]) + Number(remainder)).toString()).split('');
-      console.log('~~~~~~~~~~~',(Number(string1Split[i] * string2Split[i]) + Number(remainder)))
-      // console.log('----------- prod on 13: ',prod);
-      // console.log('********** remainder on 14: ',remainder);
-      if(prod.length > 1){
-        remainder = prod[0];
-        console.log(prod.splice(0,1));
-        prod = prod.splice(0,1);
+    var a1 = a.toString().split("").reverse();
+      var a2 = b.toString().split("").reverse();
+      var aResult = new Array;
+      for ( var iterNum1 = 0; iterNum1 < a1.length; iterNum1++ ) {
+          for ( var iterNum2 = 0; iterNum2 < a2.length; iterNum2++ ) {
+              var idxIter = iterNum1 + iterNum2;
+              aResult[idxIter] = a1[iterNum1] * a2[iterNum2] + ( idxIter >= aResult.length ? 0 : aResult[idxIter] );
+              if ( aResult[idxIter] > 9 ) {
+                  aResult[idxIter + 1] = Math.floor( aResult[idxIter] / 10 ) + ( idxIter + 1 >= aResult.length ? 0 : aResult[idxIter + 1] );
+                  aResult[idxIter] %= 10;
+              }
+          }
       }
-      // console.log('==================== final prod on 19: ',prod.join(''));
-      theSum.push(prod.join(''));
-      // console.log('theSum: \n',theSum);
+      var finalAnswer = aResult.reverse().join("");
+      while (finalAnswer.charAt(0) == '0') {
+        if (finalAnswer.length == 1) { break };
+        if (finalAnswer.charAt(1) == '.') { break };
+        finalAnswer = finalAnswer.substr(1, finalAnswer.length-1)
+      }
+      return finalAnswer;
+}
+
+// HIGHEST RATED 'BEST PRACTICES' SOLUTION:
+
+function multiply(a, b) {
+    var aa = a.split('').reverse();
+    var bb = b.split('').reverse();
+  
+    var stack = [];
+  
+    for (var i = 0; i < aa.length; i++) {
+      for (var j = 0; j < bb.length; j++) {
+        var m = aa[i] * bb[j];
+        stack[i + j] = (stack[i + j]) ? stack[i + j] + m : m;
+      }
     }
   
-    // console.log(theSum.join('').length);
+    for (var i = 0; i < stack.length; i++) {
+      var num = stack[i] % 10;
+      var move = Math.floor(stack[i] / 10);
+      stack[i] = num;
   
-    return theSum.join('');
+      if (stack[i + 1])
+        stack[i + 1] += move;
+      else if (move != 0)
+        stack[i + 1] = move;
+    }
   
+  
+    return stack.reverse().join('').replace(/^(0(?!$))+/, "");
   }
-  
-  multiply(
-    '823094582094385190384102934810293481029348123094818923749817',
-    '234758927345982475298347523984572983472398457293847594193837') ===
-    
-    
-    '193228801196767580936937025179030242333589969343595453380648878181298632138525604729517840510039331578252599113191277829'
